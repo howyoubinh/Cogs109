@@ -5,7 +5,7 @@ clear all;
 
 
 %% Import the data 1995
-[~, ~, raw] = xlsread('/home/atomic/git/COGS109_Final/scripts/total_and_per_capita_wealth_of_nations.xlsx','total wealth, 1995');
+[~, ~, raw] = xlsread('total_and_per_capita_wealth_of_nations.xlsx','total wealth, 1995');
 raw = raw(7:215,2:21);
 raw(cellfun(@(x) ~isempty(x) && isnumeric(x) && isnan(x),raw)) = {''};
 cellVectors = raw(:,[1,2,3]);
