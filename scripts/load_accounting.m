@@ -42,26 +42,27 @@ data = reshape([raw{:}],size(raw));
 % Interval is by 31
 
 % Incomes
-start = 361 - 1; % natural resource depletion (high)
+start = 1044 - 1; % natural resource depletion (high)
 start2 = 345 - 1; % net income current US (high)
 start3 = 702 - 1; % natural resource depletion (medium)
 start4 = 686 - 1; % net income current US (medium)
 start5 = 578 - 1; % natural resource depletion (low)
 start6 = 562 - 1; % net income current US(low)
 
-step5 = 31;
+step = 31;
 year = [1970:2014];
 
 %% Loops 
 
+n = 50;
 hold;
 figure(1);
-for i = 0:50
+for i = 0:n
     plot(year, data(start+(i*step),:),'o-');
 end
 xlabel('Year');
 ylabel(IndicatorName{start});
-legend(CountryName{start},CountryName{start2}, 'Differences');
+legend(CountryName{start :start + n*step:  step});
 hold off;
 % plot(year, data(1006-31,:));
 

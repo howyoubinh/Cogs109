@@ -41,8 +41,8 @@ SubsoilAssets = data(:,17);
 
 
 %% IMPORTANT, this is used to filter out NaN by x and y
-x     = TotalWealth;             % change the input here x,y,group
-y     = NaturalCapital;          % group can be either Code,Region,IncomeGr
+x     = ProtectedAreas;             % change the input here x,y,group
+y     = TotalWealth;          % group can be either Code,Region,IncomeGr
 
 filter = (~isnan(y) + ~isnan(x) - 1 == 1);
 data  = data(filter,:);
@@ -68,6 +68,8 @@ figure(1);
     subplot(2,1,1);
     gscatter(x, y, ic);
     k1 = length(ia);
+    xlabel('Protected Areas');
+    ylabel('Total Wealth');
     hold on;
     legend(C);
 
@@ -76,6 +78,8 @@ figure(1);
     k2 = length(ia);
     subplot(2,1,2);
     gscatter(x, y, ic);
+    xlabel('Protected Areas');
+    ylabel('Total Wealth');
     legend(C);
 
 hold off;
@@ -88,7 +92,48 @@ data = [x y];
 [means, meanlocs, iter] = clusterKMeansSolution(data,k2, i);
 
 
-%%
+%% Gaussian Clustering
+X = data;
+[n,p] = size(X);
+k = 6;
+Sigma = {'diagonal','full'};
+nSigma = numel(Sigma);
+SharedCovariance = {true,false};
+SCtext = {'true','false'};
+nSC = numel(SharedCovariance);
+d = 500;
+x1 = linspace(min(X(:,1)) - 2,max(X(:,1)) + 2,d);
+x2 = linspace(min(X(:,2)) - 2,max(X(:,2)) + 2,d);
+[x1grid,x2grid] = meshgrid(x1,x2);
+X0 = [x1grid(:) x2grid(:)];
+threshold = sqrt(chi2inv(0.99,2));
+options = statset('MaxIter',50); % Increase number of EM iterations
+
+figure;
+c = 1;
+for i = 1:nSigma;
+    for j = 1:nSC;
+        gmfit = fitgmdist(X,k,'CovarianceType',Sigma{i},...
+            'SharedCovariance',SharedCovariance{j},'Options',options);
+        clusterX = cluster(gmfit,X);
+        mahalDist = mahal(gmfit,X0);
+%         subplot(2,2,c);
+        h1 = gscatter(X(:,1),X(:,2),clusterX);
+        hold on;
+            for m = 1:k;
+                idx = mahalDist(:,m)<=threshold;
+                Color = h1(m).Color*0.75 + -0.5*(h1(m).Color - 1);
+                h2 = plot(X0(idx,1),X0(idx,2),'.','Color',Color,'MarkerSize',1);
+                uistack(h2,'bottom');
+            end
+        plot(gmfit.mu(:,1),gmfit.mu(:,2),'kx','LineWidth',2,'MarkerSize',10)
+        title(sprintf('Sigma is %s, SharedCovariance = %s',...
+            Sigma{i},SCtext{j}),'FontSize',8)
+        legend(h1,{'1','2','3','4','5','6'});
+        hold off
+        c = c + 1;
+    end
+end
 
 %% Clear temporary variables
 % clearvars data raw cellVectors R;
