@@ -40,9 +40,16 @@ data = reshape([raw{:}],size(raw));
 
 % For energy depletion rate: 1006 is world
 % Interval is by 31
-start = 3738 - 1;
-start2 = 610 - 1;
-step = 31;
+
+% Incomes
+start = 361 - 1; % natural resource depletion (high)
+start2 = 345 - 1; % net income current US (high)
+start3 = 702 - 1; % natural resource depletion (medium)
+start4 = 686 - 1; % net income current US (medium)
+start5 = 578 - 1; % natural resource depletion (low)
+start6 = 562 - 1; % net income current US(low)
+
+step5 = 31;
 year = [1970:2014];
 
 %% Loops 
@@ -58,14 +65,23 @@ legend(CountryName{start},CountryName{start2}, 'Differences');
 hold off;
 % plot(year, data(1006-31,:));
 
-%% Selection Differences
+    %% Selection Differences
 hold;
-plot(year, data(start,:),'o:');
-plot(year, data(start2,:),'o:');
-plot(year, data(start,:) - data(start2,:),'o:');
+
+plot3(year, data(start,:), data(start2,:), 'bo-');
+plot3(year, data(start3,:), data(start4,:), 'go:');
+plot3(year, data(start5,:), data(start6,:), 'ro--');
+
+%plot(year, data(start2,:),'x:');
+%plot(year, data(start,:) - data(start2,:),'o:');
+%plot(year, data(start3,:),'+:');
+
 xlabel('Year');
 ylabel(IndicatorName{start});
-legend(CountryName{start},CountryName{start2}, 'Differences');
+zlabel(IndicatorName{start2});
+
+grid on;
+legend(CountryName{start},CountryName{start3}, CountryName{start5});
 hold off;
 lsline;
 
@@ -75,4 +91,8 @@ figure(3);
 hold;
 plot(year, data(start,:),'x:');
 plot(year, data(start + step,:),'x:');
-lsline;git 
+xlabel('Year');
+ylabel(IndicatorName{start});
+hold off;
+lsline;
+lsline;
